@@ -1,6 +1,6 @@
 package com.github.mishaplus.tgraph;
 
-import com.github.mishaplus.tgraph.generation.AgwSetsGenerator;
+import com.github.mishaplus.tgraph.generation.GenerateSameDegreeAgwPseudographs;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import org.jgrapht.graph.DirectedPseudograph;
 
@@ -13,7 +13,7 @@ public class App {
 
     public void run() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated3verticesAnd2OutDegree
-                = new AgwSetsGenerator(3, 2).generateAllNonIsomophic();
+                = new GenerateSameDegreeAgwPseudographs(3, 2).generateAllNonIsomorphic();
         for (DirectedPseudograph<Integer, MyEdge> g: generated3verticesAnd2OutDegree) {
             System.out.println(g);
         }

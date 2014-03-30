@@ -17,7 +17,7 @@ public class GenerateSameDegreeAgwPseudographs {
 
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAllNonIsomorphic() {
         Set<DirectedPseudograph<Integer, MyEdge>> generatedNotExceedDegree
-                = new AgwSetsGenerator(
+                = new NotNecessarilySameDegreeAgwSetsGenerator(
                         vertexCount, vertexDegree
                 ).generateAllNonIsomophic();
 

@@ -5,20 +5,24 @@ import com.github.mishaplus.tgraph.IntegerMatrix;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+import org.apache.commons.math3.util.ArithmeticUtils;
 import org.jblas.ComplexDouble;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
 import org.jgrapht.graph.DirectedPseudograph;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class SameOutDegreeGraphEigenvector {
-    public List<Integer> getLeftEigenvectorWithRelativelyPrimeComponents(
+    public List<Integer> getFriedmanEigenvectorWithRelativelyPrimeComponents(
             DirectedPseudograph<Integer, MyEdge> g
-    ) {
+    ) throws EigenvectorNotFoundException {
         Set<Integer> vertices = g.vertexSet();
         Preconditions.checkArgument(vertices.size() > 0);
         int degree = g.outDegreeOf(vertices.iterator().next());
@@ -26,6 +30,62 @@ public class SameOutDegreeGraphEigenvector {
             Preconditions.checkArgument(g.outDegreeOf(vertex) == degree);
 
         IntegerMatrix intMatrix = Converter.toIntAdjArray(g);
+        List<Integer> eigenvector = getEigenvectorByBruteForce(intMatrix, degree);
+        if (eigenvector == null)
+            throw new EigenvectorNotFoundException();
+
+        return toRelativePrime(eigenvector);
+    }
+
+    private List<Integer> toRelativePrime(List<Integer> list) {
+        int[] gcd = {0};
+        list.forEach(elem -> {
+            gcd[0] = ArithmeticUtils.gcd(gcd[0], elem);
+        });
+
+        return Lists.newArrayList(list.stream().map(elem -> elem/gcd[0]).iterator());
+    }
+
+    private List<Integer> getEigenvectorByBruteForce(IntegerMatrix intMatrix, int degree) {
+        int[] possibleEigenvector = new int[intMatrix.n];
+        Arrays.fill(possibleEigenvector, 0);
+        int valueFrom = 1;
+        int valueTo   = 10;
+
+        boolean isFriedmanEigenvectorFound = brute(
+                possibleEigenvector,
+                valueFrom,
+                valueTo,
+                0,
+                v -> isLeftEigenvector(intMatrix, degree, possibleEigenvector)
+        );
+
+        if (isFriedmanEigenvectorFound)
+            return Ints.asList(possibleEigenvector);
+        else
+            return null;
+    }
+
+    private boolean brute(
+            int[] array,
+            int valueFrom,
+            int valueTo,
+            int depth,
+            Predicate<int[]> isSatisfy
+    ) {
+        if (depth == array.length)
+            return isSatisfy.test(array);
+
+        for (int value = valueFrom; value <= valueTo; value++) {
+            array[depth] = value;
+            if (brute(array, valueFrom, valueTo, depth+1, isSatisfy))
+                return true;
+        }
+
+        return false;
+    }
+
+    private List<Integer> getPossibleFriedmanEigenvector(IntegerMatrix intMatrix, int degree) {
         DoubleMatrix doubleMatrix = intMatrix.toDoubleMatrix();
 
         ComplexDouble[] friedmanEigenvector = getSomeFriedmanEigenvector(doubleMatrix, degree);
@@ -35,11 +95,10 @@ public class SameOutDegreeGraphEigenvector {
         int[] possibleIntFriedmanEigenvector = toInteger(friedmanEigenvector);
 
         Preconditions.checkArgument(
-                isFriedmanEigenvector(intMatrix, degree, possibleIntFriedmanEigenvector)
+                isLeftEigenvector(intMatrix, degree, possibleIntFriedmanEigenvector)
         );
 
-        return Lists.newArrayList(Arrays.stream(possibleIntFriedmanEigenvector)
-                .mapToObj(Integer::new).iterator());
+        return Ints.asList(possibleIntFriedmanEigenvector);
     }
 
     private ComplexDouble[] getSomeFriedmanEigenvector(DoubleMatrix doubleMatrix, int degree) {
@@ -87,7 +146,7 @@ public class SameOutDegreeGraphEigenvector {
         return (int) (x + 0.1);
     }
 
-    private boolean isFriedmanEigenvector(
+    private boolean isLeftEigenvector(
             IntegerMatrix matrix,
             int eigenvalue,
             int[] possibleLeftEigenvector

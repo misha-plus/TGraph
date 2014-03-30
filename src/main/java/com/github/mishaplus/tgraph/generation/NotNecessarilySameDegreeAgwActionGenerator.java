@@ -7,12 +7,12 @@ import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.function.Consumer;
 
-public class AllAgwActionGenerator {
+public class NotNecessarilySameDegreeAgwActionGenerator {
     private final int vertexCount;
     private final int outDegreeUpperBound;
     private final Consumer<DirectedPseudograph<Integer, MyEdge>> handler;
 
-    public AllAgwActionGenerator(
+    public NotNecessarilySameDegreeAgwActionGenerator(
             int vertexCount,
             int outDegreeUpperBound,
             Consumer<DirectedPseudograph<Integer, MyEdge>> handler
@@ -22,7 +22,7 @@ public class AllAgwActionGenerator {
         this.handler = handler;
     }
 
-    public void brute() {
+    public void bruteAll() {
         new GraphBruteForcer(vertexCount, outDegreeUpperBound, g -> {
             boolean isStronglyConnected = new StrongConnectivityInspector<>(g).isStronglyConnected();
             if (isStronglyConnected) {

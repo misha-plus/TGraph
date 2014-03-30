@@ -18,18 +18,18 @@ import javax.swing.*;
 import java.util.Scanner;
 import java.util.Set;
 
-public class GenerateAllStronglyConnectedAperiodicGraphsTest {
+public class NotNecessarilySameDegreeAgwSetsGeneratorTest {
     @Test
     public void testGenerateAll() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> expected = Sets.newHashSet();
-        new AllAgwActionGenerator(2, 5, g -> {
+        new NotNecessarilySameDegreeAgwActionGenerator(2, 5, g -> {
             if (new StrongConnectivityInspector<>(g).isStronglyConnected()
                     && new AperiodicInspector<>(g).isAperiodic())
                 expected.add(g);
-        }).brute();
+        }).bruteAll();
         Assert.assertEquals(
                 expected,
-                new AgwSetsGenerator(2, 5).generateAll()
+                new NotNecessarilySameDegreeAgwSetsGenerator(2, 5).generateAll()
         );
     }
 
@@ -64,7 +64,7 @@ public class GenerateAllStronglyConnectedAperiodicGraphsTest {
         );
 
         Set<DirectedPseudograph<Integer, MyEdge>> actual
-                = new AgwSetsGenerator(2, 2).generateAllNonIsomophic();
+                = new NotNecessarilySameDegreeAgwSetsGenerator(2, 2).generateAllNonIsomophic();
 
         for (DirectedPseudograph<Integer, MyEdge> gottenPseudograph: actual) {
             boolean isInSomeClass = false;
@@ -87,14 +87,10 @@ public class GenerateAllStronglyConnectedAperiodicGraphsTest {
     @Test
     public void generateAllNonIsomorphic3VertexAnd2Degree() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> actual
-                = new AgwSetsGenerator(3, 2).generateAllNonIsomophic();
+                = new NotNecessarilySameDegreeAgwSetsGenerator(3, 2).generateAllNonIsomophic();
         //for (Graph o : actual)
         //   show(o);
         Assert.assertEquals(23, actual.size());
-    }
-
-    public static void main(String[] args) throws Exception {
-        new GenerateAllStronglyConnectedAperiodicGraphsTest().generateAllNonIsomorphic3VertexAnd2Degree();
     }
 
     private <V, E> void show(Graph<V, E> graph) throws InterruptedException {
