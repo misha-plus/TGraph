@@ -1,5 +1,6 @@
 package com.github.mishaplus.tgraph;
 
+import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
 import com.github.mishaplus.tgraph.generation.GenerateSameDegreeAgwPseudographs;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -15,7 +16,11 @@ public class App {
         Set<DirectedPseudograph<Integer, MyEdge>> generated3verticesAnd2OutDegree
                 = new GenerateSameDegreeAgwPseudographs(3, 2).generateAllNonIsomorphic();
         for (DirectedPseudograph<Integer, MyEdge> g: generated3verticesAnd2OutDegree) {
-            System.out.println(g);
+            System.out.print(g + " ");
+            System.out.println(
+                    new SameOutDegreeGraphEigenvector()
+                            .getFriedmanEigenvectorWithRelativelyPrimeComponents(g)
+            );
         }
     }
 }
