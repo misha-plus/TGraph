@@ -92,18 +92,4 @@ public class NotNecessarilySameDegreeAgwSetsGeneratorTest {
         //   show(o);
         Assert.assertEquals(23, actual.size());
     }
-
-    private <V, E> void show(Graph<V, E> graph) throws InterruptedException {
-        JFrame frame = new JFrame();
-        frame.setSize(400, 400);
-        JGraph jgraph = new JGraph(new JGraphModelAdapter(graph));
-        frame.getContentPane().add(jgraph);
-        frame.setVisible(true);
-        while (true) {
-            String in = new Scanner(System.in).nextLine();
-            if (in.contains("a"))
-                break;
-            Thread.sleep(2000);
-        }
-    }
 }
