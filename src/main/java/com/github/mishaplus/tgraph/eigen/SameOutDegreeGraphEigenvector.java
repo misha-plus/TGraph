@@ -13,7 +13,6 @@ import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
 import org.jgrapht.graph.DirectedPseudograph;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;

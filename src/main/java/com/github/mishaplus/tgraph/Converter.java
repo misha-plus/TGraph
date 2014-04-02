@@ -3,7 +3,6 @@ package com.github.mishaplus.tgraph;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.jblas.DoubleMatrix;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.Map;

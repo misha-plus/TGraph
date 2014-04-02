@@ -6,16 +6,11 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.jgraph.JGraph;
-import org.jgrapht.Graph;
 import org.jgrapht.alg.StrongConnectivityInspector;
-import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.swing.*;
-import java.util.Scanner;
 import java.util.Set;
 
 public class NotNecessarilySameDegreeAgwSetsGeneratorTest {

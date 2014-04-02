@@ -1,7 +1,6 @@
 package com.github.mishaplus.tgraph.util;
 
 import com.google.common.base.Objects;
-import org.jgrapht.graph.DefaultEdge;
 
 public class MyEdge /*extends DefaultEdge*/ {
     public final int from;

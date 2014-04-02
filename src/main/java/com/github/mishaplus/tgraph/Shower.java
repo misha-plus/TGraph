@@ -5,7 +5,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphModelAdapter;
 
 import javax.swing.*;
-import java.util.Scanner;
 
 /**
  * Created by michael on 01.04.14

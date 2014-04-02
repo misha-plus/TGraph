@@ -5,8 +5,6 @@ import com.github.mishaplus.tgraph.generation.GenerateSameDegreeAgwPseudographs;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.MyEdge;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultiset;
 import org.jgrapht.graph.DirectedPseudograph;
 
