@@ -31,4 +31,6 @@ public interface Automata<S, A> {
     Automata<SqAutomataState<S>, A> toPairAutomata();
 
     List<A> findShortestPath(Set<S> from, S to);
+
+    Automata<S, A> copy();
 }

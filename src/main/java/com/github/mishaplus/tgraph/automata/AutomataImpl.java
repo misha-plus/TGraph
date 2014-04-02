@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by michael on 01.04.14
  */
-public class AutomataImpl<S, A> implements Automata<S, A> {
+public class AutomataImpl<S, A> implements Automata<S, A>, Cloneable {
     private Map<S, Map<A, S>> transitions;
 
     public AutomataImpl() {
@@ -241,5 +241,21 @@ public class AutomataImpl<S, A> implements Automata<S, A> {
         return Objects.toStringHelper("Automata")
                 .add("Transitions", transitions)
                 .toString();
+    }
+
+    @Override
+    public Automata<S, A> copy() {
+        Automata<S, A> result = new AutomataImpl<>();
+
+        for (Map.Entry<S, Map<A, S>> stateTransitions: transitions.entrySet()) {
+            S from = stateTransitions.getKey();
+            result.addState(from);
+            for (Map.Entry<A, S> transition: stateTransitions.getValue().entrySet()) {
+                A ch = transition.getKey();
+                S to = transition.getValue();
+                result.addTransition(from, to, ch);
+            }
+        }
+        return result;
     }
 }

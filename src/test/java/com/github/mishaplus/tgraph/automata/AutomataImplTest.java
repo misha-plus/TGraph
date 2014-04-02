@@ -241,4 +241,10 @@ public class AutomataImplTest {
                 )
         );
     }
+
+    @Test
+    public void testCopy() {
+        Assert.assertTrue(automata != automata.copy());
+        Assert.assertEquals(automata, automata.copy());
+    }
 }
