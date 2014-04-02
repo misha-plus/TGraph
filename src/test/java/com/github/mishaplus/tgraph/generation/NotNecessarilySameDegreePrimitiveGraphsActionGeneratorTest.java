@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.util.Set;
 
-public class NotNecessarilySameDegreeAgwActionGeneratorTest {
+public class NotNecessarilySameDegreePrimitiveGraphsActionGeneratorTest {
     @Test
     public void testBrute() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> expected = ImmutableSet.of(
@@ -36,7 +36,7 @@ public class NotNecessarilySameDegreeAgwActionGeneratorTest {
         );
 
         Set<DirectedPseudograph<Integer, MyEdge>> actual = Sets.newHashSet();
-        new NotNecessarilySameDegreeAgwActionGenerator(2, 2, actual::add).bruteAll();
+        new NotNecessarilySameDegreePrimitiveGraphsActionGenerator(2, 2, actual::add).bruteAll();
 
         Assert.assertEquals(Sets.newHashSet(expected), actual);
     }

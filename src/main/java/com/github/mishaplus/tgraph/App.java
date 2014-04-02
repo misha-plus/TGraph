@@ -1,7 +1,7 @@
 package com.github.mishaplus.tgraph;
 
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
-import com.github.mishaplus.tgraph.generation.GenerateSameDegreeAgwPseudographs;
+import com.github.mishaplus.tgraph.generation.GenerateSameDegreePrimitivePseudographs;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.MyEdge;
@@ -18,7 +18,7 @@ public class App {
 
     public void run() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated3verticesAnd2OutDegree
-                = new GenerateSameDegreeAgwPseudographs(4, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(4, 2).generateAllNonIsomorphic();
         for (DirectedPseudograph<Integer, MyEdge> g: generated3verticesAnd2OutDegree) {
             List<Integer> eigenvector = new SameOutDegreeGraphEigenvector()
                     .getFriedmanEigenvectorWithRelativelyPrimeComponents(g);

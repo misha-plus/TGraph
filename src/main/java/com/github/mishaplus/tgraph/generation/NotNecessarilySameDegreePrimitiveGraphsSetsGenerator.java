@@ -8,18 +8,18 @@ import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.Set;
 
-public class NotNecessarilySameDegreeAgwSetsGenerator {
+public class NotNecessarilySameDegreePrimitiveGraphsSetsGenerator {
     private final int vertexCount;
     private final int outDegreeUpperBound;
 
-    public NotNecessarilySameDegreeAgwSetsGenerator(int vertexCount, int outDegreeUpperBound) {
+    public NotNecessarilySameDegreePrimitiveGraphsSetsGenerator(int vertexCount, int outDegreeUpperBound) {
         this.vertexCount = vertexCount;
         this.outDegreeUpperBound = outDegreeUpperBound;
     }
 
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAll() {
         Set<DirectedPseudograph<Integer, MyEdge>> result = Sets.newHashSet();
-        new NotNecessarilySameDegreeAgwActionGenerator(vertexCount, outDegreeUpperBound, result::add).bruteAll();
+        new NotNecessarilySameDegreePrimitiveGraphsActionGenerator(vertexCount, outDegreeUpperBound, result::add).bruteAll();
         return result;
     }
 

@@ -6,18 +6,18 @@ import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.Set;
 
-public class GenerateSameDegreeAgwPseudographs {
+public class GenerateSameDegreePrimitivePseudographs {
     private final int vertexCount;
     private final int vertexDegree;
 
-    public GenerateSameDegreeAgwPseudographs(int vertexCount, int vertexDegree) {
+    public GenerateSameDegreePrimitivePseudographs(int vertexCount, int vertexDegree) {
         this.vertexCount = vertexCount;
         this.vertexDegree = vertexDegree;
     }
 
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAllNonIsomorphic() {
         Set<DirectedPseudograph<Integer, MyEdge>> generatedNotExceedDegree
-                = new NotNecessarilySameDegreeAgwSetsGenerator(
+                = new NotNecessarilySameDegreePrimitiveGraphsSetsGenerator(
                         vertexCount, vertexDegree
                 ).generateAllNonIsomophic();
 

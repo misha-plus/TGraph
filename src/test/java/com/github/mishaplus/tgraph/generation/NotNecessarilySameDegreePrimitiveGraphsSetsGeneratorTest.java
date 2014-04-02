@@ -13,18 +13,18 @@ import org.junit.Test;
 
 import java.util.Set;
 
-public class NotNecessarilySameDegreeAgwSetsGeneratorTest {
+public class NotNecessarilySameDegreePrimitiveGraphsSetsGeneratorTest {
     @Test
     public void testGenerateAll() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> expected = Sets.newHashSet();
-        new NotNecessarilySameDegreeAgwActionGenerator(2, 5, g -> {
+        new NotNecessarilySameDegreePrimitiveGraphsActionGenerator(2, 5, g -> {
             if (new StrongConnectivityInspector<>(g).isStronglyConnected()
                     && new AperiodicInspector<>(g).isAperiodic())
                 expected.add(g);
         }).bruteAll();
         Assert.assertEquals(
                 expected,
-                new NotNecessarilySameDegreeAgwSetsGenerator(2, 5).generateAll()
+                new NotNecessarilySameDegreePrimitiveGraphsSetsGenerator(2, 5).generateAll()
         );
     }
 
@@ -59,7 +59,7 @@ public class NotNecessarilySameDegreeAgwSetsGeneratorTest {
         );
 
         Set<DirectedPseudograph<Integer, MyEdge>> actual
-                = new NotNecessarilySameDegreeAgwSetsGenerator(2, 2).generateAllNonIsomophic();
+                = new NotNecessarilySameDegreePrimitiveGraphsSetsGenerator(2, 2).generateAllNonIsomophic();
 
         for (DirectedPseudograph<Integer, MyEdge> gottenPseudograph: actual) {
             boolean isInSomeClass = false;
@@ -82,7 +82,7 @@ public class NotNecessarilySameDegreeAgwSetsGeneratorTest {
     @Test
     public void generateAllNonIsomorphic3VertexAnd2Degree() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> actual
-                = new NotNecessarilySameDegreeAgwSetsGenerator(3, 2).generateAllNonIsomophic();
+                = new NotNecessarilySameDegreePrimitiveGraphsSetsGenerator(3, 2).generateAllNonIsomophic();
         //for (Graph o : actual)
         //   show(o);
         Assert.assertEquals(23, actual.size());

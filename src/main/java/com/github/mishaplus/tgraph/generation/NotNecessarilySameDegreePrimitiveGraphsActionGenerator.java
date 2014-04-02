@@ -7,12 +7,12 @@ import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.function.Consumer;
 
-public class NotNecessarilySameDegreeAgwActionGenerator {
+public class NotNecessarilySameDegreePrimitiveGraphsActionGenerator {
     private final int vertexCount;
     private final int outDegreeUpperBound;
     private final Consumer<DirectedPseudograph<Integer, MyEdge>> handler;
 
-    public NotNecessarilySameDegreeAgwActionGenerator(
+    public NotNecessarilySameDegreePrimitiveGraphsActionGenerator(
             int vertexCount,
             int outDegreeUpperBound,
             Consumer<DirectedPseudograph<Integer, MyEdge>> handler

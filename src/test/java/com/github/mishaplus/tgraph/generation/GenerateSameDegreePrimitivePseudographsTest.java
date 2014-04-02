@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import java.util.Set;
 
-public class GenerateSameDegreeAgwPseudographsTest {
+public class GenerateSameDegreePrimitivePseudographsTest {
     @Test
     public void testGenerate2x2NonIsomorphic() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> expectedClass1 = ImmutableSet.of(
@@ -35,7 +35,7 @@ public class GenerateSameDegreeAgwPseudographsTest {
         );
 
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreeAgwPseudographs(2, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(2, 2).generateAllNonIsomorphic();
 
         for (DirectedPseudograph<Integer, MyEdge> generatedGraph: generated)
             Assert.assertThat(generatedGraph, Matchers.isIn(expectedUnion));
@@ -58,7 +58,7 @@ public class GenerateSameDegreeAgwPseudographsTest {
     @Test
     public void testGenerate3x2NonIsomorphic() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreeAgwPseudographs(3, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(3, 2).generateAllNonIsomorphic();
         Assert.assertEquals(12, generated.size());
     }
 
@@ -76,7 +76,7 @@ public class GenerateSameDegreeAgwPseudographsTest {
         );
 
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreeAgwPseudographs(1, 5).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(1, 5).generateAllNonIsomorphic();
         Assert.assertEquals(expected, generated);
     }
 }
