@@ -31,12 +31,7 @@ public class NotNecessarilySameDegreePrimitiveGraphsSetsGenerator {
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAllNonIsomophic() {
         SplitToRepresenters<DirectedPseudograph<Integer, MyEdge>> directedPseudographsSplitter
                 = new SplitToRepresenters<>(new GraphIsomorphismRelation());
-        long startMillis = System.currentTimeMillis();
-        System.out.println(startMillis);
         Set<DirectedPseudograph<Integer, MyEdge>> graphs = generateAll();
-        long endMillis = System.currentTimeMillis();
-        System.out.println(endMillis);
-        System.out.println(endMillis - startMillis);
         return directedPseudographsSplitter.split(graphs);
     }
 }
