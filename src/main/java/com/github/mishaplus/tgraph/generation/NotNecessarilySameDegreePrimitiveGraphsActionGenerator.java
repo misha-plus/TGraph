@@ -23,7 +23,7 @@ public class NotNecessarilySameDegreePrimitiveGraphsActionGenerator {
     }
 
     public void bruteAll() {
-        new GraphBruteForcer(vertexCount, outDegreeUpperBound, g -> {
+        new NotNecessarilySameDegreeGraphBruteForcer(vertexCount, outDegreeUpperBound, g -> {
             boolean isStronglyConnected = new StrongConnectivityInspector<>(g).isStronglyConnected();
             if (isStronglyConnected) {
                 boolean isAperiodic = new AperiodicInspector<>(g).isAperiodic();

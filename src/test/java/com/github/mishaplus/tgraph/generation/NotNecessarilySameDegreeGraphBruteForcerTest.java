@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import java.util.Set;
 
-public class GraphBruteForcerTest {
+public class NotNecessarilySameDegreeGraphBruteForcerTest {
     @Test
     public void testBrute1vertexGraph() throws Exception {
         DirectedPseudograph<Integer, MyEdge> generationGraph = DirectedPseudographCreator.create();
@@ -26,7 +26,7 @@ public class GraphBruteForcerTest {
             generationGraph = (DirectedPseudograph) generationGraph.clone();
         }
         Set<DirectedPseudograph<Integer, MyEdge>> actual = Sets.newHashSet();
-        new GraphBruteForcer(n, d, actual::add).brute();
+        new NotNecessarilySameDegreeGraphBruteForcer(n, d, actual::add).brute();
 
         Assert.assertEquals(expected, actual);
     }
@@ -51,7 +51,7 @@ public class GraphBruteForcerTest {
         decartUnite(variants.getVariants(1, 2), variants.getVariants(2, 1))
                 .forEach(edges -> expected.add(DirectedPseudographCreator.create(edges)));
         Set<DirectedPseudograph<Integer, MyEdge>> actual = Sets.newHashSet();
-        new GraphBruteForcer(n, d, actual::add).brute();
+        new NotNecessarilySameDegreeGraphBruteForcer(n, d, actual::add).brute();
 
 
 

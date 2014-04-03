@@ -6,6 +6,7 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.Sets;
 import org.jgrapht.graph.DirectedPseudograph;
 
+import java.util.Date;
 import java.util.Set;
 
 public class NotNecessarilySameDegreePrimitiveGraphsSetsGenerator {
@@ -19,13 +20,23 @@ public class NotNecessarilySameDegreePrimitiveGraphsSetsGenerator {
 
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAll() {
         Set<DirectedPseudograph<Integer, MyEdge>> result = Sets.newHashSet();
-        new NotNecessarilySameDegreePrimitiveGraphsActionGenerator(vertexCount, outDegreeUpperBound, result::add).bruteAll();
+        new NotNecessarilySameDegreePrimitiveGraphsActionGenerator(
+                vertexCount,
+                outDegreeUpperBound,
+                result::add
+        ).bruteAll();
         return result;
     }
 
     public Set<DirectedPseudograph<Integer, MyEdge>> generateAllNonIsomophic() {
         SplitToRepresenters<DirectedPseudograph<Integer, MyEdge>> directedPseudographsSplitter
                 = new SplitToRepresenters<>(new GraphIsomorphismRelation());
-        return directedPseudographsSplitter.split(generateAll());
+        long startMillis = System.currentTimeMillis();
+        System.out.println(startMillis);
+        Set<DirectedPseudograph<Integer, MyEdge>> graphs = generateAll();
+        long endMillis = System.currentTimeMillis();
+        System.out.println(endMillis);
+        System.out.println(endMillis - startMillis);
+        return directedPseudographsSplitter.split(graphs);
     }
 }

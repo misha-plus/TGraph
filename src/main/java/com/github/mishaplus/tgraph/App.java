@@ -11,10 +11,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.jgrapht.graph.DirectedPseudograph;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 class SynchronizationEntry {
     final boolean isSynchronizable;
@@ -89,7 +86,8 @@ public class App {
                     toEigen.get(g),
                     synchronizationEntry
             );
-            Shower.show(g);
+            //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
+            //    Shower.show(g);
         }
 
         //Shower.show(g);

@@ -3,6 +3,7 @@ package com.github.mishaplus.tgraph.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,5 +52,17 @@ public class Util {
                 targetVertex,
                 new MyEdge(sourceVertex, targetVertex, edgePower + 1)
         );
+    }
+
+    public static <V, E> boolean isGraphHaveSameDegree(DirectedPseudograph<V, E> g) {
+        int someVertexDegree = getSomeDegree(g);
+        for (V vertex: g.vertexSet())
+            if (g.outDegreeOf(vertex) != someVertexDegree)
+                return false;
+        return true;
+    }
+
+    public static <V, E> int getSomeDegree(DirectedPseudograph<V, E> g) {
+        return g.outDegreeOf(g.vertexSet().iterator().next());
     }
 }

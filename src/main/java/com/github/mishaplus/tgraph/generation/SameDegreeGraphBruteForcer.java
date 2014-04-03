@@ -5,33 +5,28 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.Util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
-public class GraphBruteForcer {
+public class SameDegreeGraphBruteForcer {
     private final int vertexCount;
-    private final int outDegreeUpperBound;
+    private final int degree;
     private final Consumer<DirectedPseudograph<Integer, MyEdge>> handler;
     private final List<Integer> vertices;
-    private final Map<Integer, List<List<Integer>>> decartPower;
+    private final List<List<Integer>> decartPower;
 
-    public GraphBruteForcer(
+    public SameDegreeGraphBruteForcer(
             int vertexCount,
-            int outDegreeUpperBound,
+            int degree,
             Consumer<DirectedPseudograph<Integer, MyEdge>> handler
     ) {
         this.vertexCount = vertexCount;
-        this.outDegreeUpperBound = outDegreeUpperBound;
+        this.degree = degree;
         this.handler = handler;
         vertices = Util.generateList(1, vertexCount);
-        decartPower = Maps.newHashMap();
-        for (int degree = 1; degree <= outDegreeUpperBound; degree++) {
-            decartPower.put(degree, Util.decartPower(vertices, degree));
-        }
+        decartPower = Util.decartPower(vertices, degree);
     }
 
     public void brute() {
@@ -47,13 +42,10 @@ public class GraphBruteForcer {
             return;
         }
 
-        // TODO create class with one degree
-        for (int degree = 1; degree <= outDegreeUpperBound; degree++) {
-            for (List<Integer> vTargets : decartPower.get(degree)) {
-                vTargets.forEach(target -> edges.put(v, target));
-                bruteGraph(v + 1, edges);
-                edges.removeAll(v);
-            }
+        for (List<Integer> vTargets : decartPower) {
+            vTargets.forEach(target -> edges.put(v, target));
+            bruteGraph(v + 1, edges);
+            edges.removeAll(v);
         }
     }
 }

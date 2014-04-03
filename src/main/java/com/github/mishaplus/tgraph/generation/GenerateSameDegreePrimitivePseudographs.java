@@ -1,6 +1,7 @@
 package com.github.mishaplus.tgraph.generation;
 
 import com.github.mishaplus.tgraph.util.MyEdge;
+import com.github.mishaplus.tgraph.util.Util;
 import com.google.common.collect.Sets;
 import org.jgrapht.graph.DirectedPseudograph;
 
@@ -23,15 +24,8 @@ public class GenerateSameDegreePrimitivePseudographs {
 
         return Sets.newHashSet(generatedNotExceedDegree
                 .stream()
-                .filter(this::isGraphHaveSameDegree)
+                .filter(Util::isGraphHaveSameDegree)
                 .iterator()
         );
-    }
-
-    private <V, E> boolean isGraphHaveSameDegree(DirectedPseudograph<V, E> g) {
-        for (V vertex: g.vertexSet())
-            if (g.outDegreeOf(vertex) != vertexDegree)
-                return false;
-        return true;
     }
 }
