@@ -1,5 +1,6 @@
 package com.github.mishaplus.tgraph.generation;
 
+import com.github.mishaplus.tgraph.generation.nsamedegree.NotNecessarilySameDegreePrimitiveGraphsSetsGenerator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.Util;
 import com.google.common.collect.Sets;

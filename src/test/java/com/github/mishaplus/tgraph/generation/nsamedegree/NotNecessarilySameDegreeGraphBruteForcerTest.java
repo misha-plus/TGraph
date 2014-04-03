@@ -1,5 +1,6 @@
-package com.github.mishaplus.tgraph.generation;
+package com.github.mishaplus.tgraph.generation.nsamedegree;
 
+import com.github.mishaplus.tgraph.generation.nsamedegree.NotNecessarilySameDegreeGraphBruteForcer;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.Util;

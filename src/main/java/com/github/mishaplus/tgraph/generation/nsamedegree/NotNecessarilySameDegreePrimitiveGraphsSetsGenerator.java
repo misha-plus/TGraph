@@ -1,12 +1,12 @@
-package com.github.mishaplus.tgraph.generation;
+package com.github.mishaplus.tgraph.generation.nsamedegree;
 
 import com.github.mishaplus.tgraph.equivalence.GraphIsomorphismRelation;
 import com.github.mishaplus.tgraph.equivalence.SplitToRepresenters;
+import com.github.mishaplus.tgraph.generation.nsamedegree.NotNecessarilySameDegreePrimitiveGraphsActionGenerator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.Sets;
 import org.jgrapht.graph.DirectedPseudograph;
 
-import java.util.Date;
 import java.util.Set;
 
 public class NotNecessarilySameDegreePrimitiveGraphsSetsGenerator {

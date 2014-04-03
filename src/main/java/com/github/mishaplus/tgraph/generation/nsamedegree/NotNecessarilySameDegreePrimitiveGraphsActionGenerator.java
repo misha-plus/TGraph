@@ -1,8 +1,8 @@
-package com.github.mishaplus.tgraph.generation;
+package com.github.mishaplus.tgraph.generation.nsamedegree;
 
-import com.github.mishaplus.tgraph.util.AperiodicInspector;
+import com.github.mishaplus.tgraph.generation.PrimitiveGraphInspector;
+import com.github.mishaplus.tgraph.generation.nsamedegree.NotNecessarilySameDegreeGraphBruteForcer;
 import com.github.mishaplus.tgraph.util.MyEdge;
-import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.function.Consumer;
@@ -24,12 +24,8 @@ public class NotNecessarilySameDegreePrimitiveGraphsActionGenerator {
 
     public void bruteAll() {
         new NotNecessarilySameDegreeGraphBruteForcer(vertexCount, outDegreeUpperBound, g -> {
-            boolean isStronglyConnected = new StrongConnectivityInspector<>(g).isStronglyConnected();
-            if (isStronglyConnected) {
-                boolean isAperiodic = new AperiodicInspector<>(g).isAperiodic();
-                if (isAperiodic)
-                    handler.accept(g);
-            }
+            if (PrimitiveGraphInspector.isPrimitive(g))
+                handler.accept(g);
         }).brute();
     }
 }
