@@ -5,15 +5,19 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.Util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class GraphBruteForcer {
     private final int vertexCount;
     private final int outDegreeUpperBound;
     private final Consumer<DirectedPseudograph<Integer, MyEdge>> handler;
+    private final List<Integer> vertices;
+    private final Map<Integer, List<List<Integer>>> decartPower;
 
     public GraphBruteForcer(
             int vertexCount,
@@ -23,6 +27,11 @@ public class GraphBruteForcer {
         this.vertexCount = vertexCount;
         this.outDegreeUpperBound = outDegreeUpperBound;
         this.handler = handler;
+        vertices = Util.generateList(1, vertexCount);
+        decartPower = Maps.newHashMap();
+        for (int degree = 1; degree <= outDegreeUpperBound; degree++) {
+            decartPower.put(degree, Util.decartPower(vertices, degree));
+        }
     }
 
     public void brute() {
@@ -38,11 +47,9 @@ public class GraphBruteForcer {
             return;
         }
 
-        List<Integer> vertices = Util.generateList(1, vertexCount);
-
+        // TODO create class with one degree
         for (int degree = 1; degree <= outDegreeUpperBound; degree++) {
-            List<List<Integer>> vTargetsPack = Util.decartPower(vertices, degree);
-            for (List<Integer> vTargets : vTargetsPack) {
+            for (List<Integer> vTargets : decartPower.get(degree)) {
                 vTargets.forEach(target -> edges.put(v, target));
                 bruteGraph(v + 1, edges);
                 edges.removeAll(v);
