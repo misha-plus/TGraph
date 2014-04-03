@@ -24,7 +24,7 @@ public class GenerateSameDegreePrimitivePseudographs {
 
         return Sets.newHashSet(generatedNotExceedDegree
                 .stream()
-                .filter(Util::isGraphHaveSameDegree)
+                .filter(g -> Util.isGraphHaveDegree(g, vertexDegree))
                 .iterator()
         );
     }

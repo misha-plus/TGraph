@@ -56,8 +56,12 @@ public class Util {
 
     public static <V, E> boolean isGraphHaveSameDegree(DirectedPseudograph<V, E> g) {
         int someVertexDegree = getSomeDegree(g);
+        return isGraphHaveDegree(g, someVertexDegree);
+    }
+
+    public static <V, E> boolean isGraphHaveDegree(DirectedPseudograph<V, E> g, int degree) {
         for (V vertex: g.vertexSet())
-            if (g.outDegreeOf(vertex) != someVertexDegree)
+            if (g.outDegreeOf(vertex) != degree)
                 return false;
         return true;
     }
