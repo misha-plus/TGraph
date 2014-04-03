@@ -47,7 +47,6 @@ public class NotNecessarilySameDegreeGraphBruteForcer {
             return;
         }
 
-        // TODO create class with one degree
         for (int degree = 1; degree <= outDegreeUpperBound; degree++) {
             for (List<Integer> vTargets : decartPowers.get(degree)) {
                 vTargets.forEach(target -> edges.put(v, target));
