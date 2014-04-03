@@ -1,6 +1,5 @@
 package com.github.mishaplus.tgraph.equivalence;
 
-import com.github.mishaplus.tgraph.IntegerMatrix;
 import com.github.mishaplus.tgraph.eigen.EigenvectorNotFoundException;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
 import com.github.mishaplus.tgraph.util.MyEdge;
@@ -33,7 +32,10 @@ public class GraphIsomorphismInvariant
     private List<Integer> friedmanEigenvector(DirectedPseudograph<Integer, MyEdge> g) {
         if (Util.isGraphHaveSameDegree(g))
             try {
-                return new SameOutDegreeGraphEigenvector().getFriedmanEigenvectorWithRelativelyPrimeComponents(g);
+                List<Integer> result = new SameOutDegreeGraphEigenvector()
+                        .getFriedmanEigenvectorWithRelativelyPrimeComponents(g);
+                Collections.sort(result);
+                return result;
             } catch (EigenvectorNotFoundException e) {
                 throw new IllegalArgumentException(e);
             }
