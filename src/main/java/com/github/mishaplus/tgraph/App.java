@@ -50,7 +50,7 @@ public class App {
 
     public void run() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreePrimitivePseudographs(5, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(4, 2).generateAllNonIsomorphic();
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked

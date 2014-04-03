@@ -18,10 +18,6 @@ public class GraphIsomorphismRelation
             DirectedPseudograph<Integer, MyEdge> a,
             DirectedPseudograph<Integer, MyEdge> b
     ) {
-        /*return AdaptiveIsomorphismInspectorFactory
-                .createIsomorphismInspector(a, b)
-                .isIsomorphic();
-                */
         IntegerMatrix aMatrix = Converter.toIntAdjArray(a);
         IntegerMatrix bMatrix = Converter.toIntAdjArray(b);
 

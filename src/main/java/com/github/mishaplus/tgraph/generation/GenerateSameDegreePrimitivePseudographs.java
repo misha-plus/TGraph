@@ -1,5 +1,6 @@
 package com.github.mishaplus.tgraph.generation;
 
+import com.github.mishaplus.tgraph.equivalence.GraphIsomorphismInvariant;
 import com.github.mishaplus.tgraph.equivalence.GraphIsomorphismRelation;
 import com.github.mishaplus.tgraph.equivalence.SplitToRepresenters;
 import com.github.mishaplus.tgraph.generation.nsamedegree.NotNecessarilySameDegreePrimitiveGraphsSetsGenerator;
@@ -61,7 +62,8 @@ public class GenerateSameDegreePrimitivePseudographs {
         System.out.println(endMillis - startMillis);
 
         Set<DirectedPseudograph<Integer, MyEdge>> nonIsomorphic = new SplitToRepresenters<>(
-                new GraphIsomorphismRelation()
+                new GraphIsomorphismRelation(),
+                new GraphIsomorphismInvariant()
         ).split(generatedSameDegree);
 
         return nonIsomorphic;
