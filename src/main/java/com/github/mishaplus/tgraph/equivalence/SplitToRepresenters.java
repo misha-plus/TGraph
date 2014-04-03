@@ -32,6 +32,7 @@ public class SplitToRepresenters<T> {
             invariantToElements.put(invariant.getInvariant(elem), elem);
 
         List<Integer> classesSize = Lists.newArrayList();
+        //noinspection Convert2streamapi
         for (Map.Entry<List<?>, Collection<T>> invariantEntry
                 : invariantToElements.asMap().entrySet())
             classesSize.add(invariantEntry.getValue().size());
