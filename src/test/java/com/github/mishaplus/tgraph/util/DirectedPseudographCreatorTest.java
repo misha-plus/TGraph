@@ -1,10 +1,7 @@
 package com.github.mishaplus.tgraph.util;
 
 import com.github.mishaplus.tgraph.IntegerMatrix;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,6 +51,42 @@ public class DirectedPseudographCreatorTest {
         Assert.assertEquals(
                 expectedEdges,
                 getEdges(DirectedPseudographCreator.create(new IntegerMatrix(adj)))
+        );
+    }
+
+    @Test
+    public void testFromString() {
+        String input = "+G:" + "(" +
+                "[1, 2, 3, 4, 6], [" +
+                "(1->2^1)=(1,2), " +
+                "(1->3^1)=(1,3), " +
+                "(2->4^1)=(2,4), " +
+                "(2->4^2)=(2,4), " +
+                "(3->4^1)=(3,4), " +
+                "(3->4^2)=(3,4), " +
+                "(4->1^1)=(4,1), " +
+                "(4->4^1)=(4,4)" +
+                "]) esdfggsd[ sgd ) ] dfsg[ ";
+
+        Multimap<Integer, Integer> edges = ImmutableMultimap.<Integer, Integer>builder()
+                .put(1, 2)
+                .put(1, 3)
+                .put(2, 4)
+                .put(2, 4)
+                .put(3, 4)
+                .put(3, 4)
+                .put(4, 1)
+                .put(4, 4)
+                .build();
+        DirectedPseudograph<Integer, MyEdge> expected = DirectedPseudographCreator.create(
+                edges
+        );
+
+        expected.addVertex(6);
+
+        Assert.assertEquals(
+                expected,
+                DirectedPseudographCreator.fromString(input)
         );
     }
 }
