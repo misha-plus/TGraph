@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Set;
 
 public class SameOutDegreeGraphEigenvector {
-    private EigenvectorFinder eigenvectorFinder = new BruteForceEigenvectorFinder();
+    private EigenvectorFinder eigenvectorFinder = new GaussEigenvectorFinderImpl();//new BruteForceEigenvectorFinder();
 
     public List<Integer> getFriedmanEigenvectorWithRelativelyPrimeComponents(
             DirectedPseudograph<Integer, MyEdge> g
-    ) throws EigenvectorNotFoundException {
+    ) {
         Set<Integer> vertices = g.vertexSet();
         Preconditions.checkArgument(vertices.size() > 0);
         int degree = g.outDegreeOf(vertices.iterator().next());
@@ -25,8 +25,7 @@ public class SameOutDegreeGraphEigenvector {
 
         IntegerMatrix intMatrix = Converter.toIntAdjArray(g);
         List<Integer> eigenvector = eigenvectorFinder.findPositiveEigenvector(intMatrix, degree);
-        if (eigenvector == null)
-            throw new EigenvectorNotFoundException();
+        Preconditions.checkNotNull(eigenvector, "EigenvectorNotFound");
 
         return toRelativePrime(eigenvector);
     }

@@ -30,18 +30,16 @@ public class GraphIsomorphismInvariant
     }
 
     private List<Integer> friedmanEigenvector(DirectedPseudograph<Integer, MyEdge> g) {
+        List<Integer> result = null;
         if (Util.isGraphHaveSameDegree(g))
-            try {
-                List<Integer> result = new SameOutDegreeGraphEigenvector()
-                        .getFriedmanEigenvectorWithRelativelyPrimeComponents(g);
-                Collections.sort(result);
-                return result;
-            } catch (EigenvectorNotFoundException e) {
-                throw new IllegalArgumentException(e);
-            }
-        else {
-            List<Integer> result = Lists.newArrayList();
-            g.vertexSet().forEach(v -> result.add(0));
+            result = new SameOutDegreeGraphEigenvector()
+                    .getFriedmanEigenvectorWithRelativelyPrimeComponents(g);
+        if (result == null) {
+            List<Integer> tmp = Lists.newArrayList();
+            g.vertexSet().forEach(v -> tmp.add(0));
+            return tmp;
+        } else {
+            Collections.sort(result);
             return result;
         }
     }
