@@ -5,10 +5,7 @@ import com.github.mishaplus.tgraph.generation.GenerateSameDegreePrimitivePseudog
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.MyEdge;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.*;
@@ -80,13 +77,28 @@ public class App {
         for (Map.Entry<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> syncClass : invMarked.entries()) {
             SynchronizationEntry synchronizationEntry = syncClass.getKey();
             DirectedPseudograph<Integer, MyEdge> g = syncClass.getValue();
+
+            boolean isGHaveMultiEdge = false;
+
+            for (int v : g.vertexSet()) {
+                Set<Integer> to = Sets.newHashSet();
+                for (MyEdge edge : g.outgoingEdgesOf(v))
+                    to.add(g.getEdgeTarget(edge));
+                if (to.size() == 1)
+                    isGHaveMultiEdge = true;
+            }
+
             System.out.printf(
-                    "G:%s eigen:%s {%s}\n",
+                    "G:%s eigen:%s {%s} isGHaveMultipleEdges:%s\n",
                     g,
                     toEigen.get(g),
-                    synchronizationEntry
+                    synchronizationEntry,
+                    isGHaveMultiEdge
             );
             //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
+            //    Shower.show(g);
+
+            //if (synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
             //    Shower.show(g);
         }
 
