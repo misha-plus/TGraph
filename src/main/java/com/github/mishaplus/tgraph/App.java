@@ -1,9 +1,11 @@
 package com.github.mishaplus.tgraph;
 
+import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
 import com.github.mishaplus.tgraph.generation.GenerateSameDegreePrimitivePseudographs;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
+import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -42,12 +44,43 @@ class SynchronizationEntry {
 
 public class App {
     public static void main(String[] args) throws Exception {
-        new App().run();
+        App app = new App();
+        app.tmp2();
+        //app.tmpShow();
+        //app.run();
+    }
+
+    public void tmp2() throws Exception {
+        String gString = "G:([1, 2, 3], [(1->2^1)=(1,2), (1->3^1)=(1,3), (2->2^1)=(2,2)," +
+                " (2->3^1)=(2,3), (3->1^1)=(3,1), (3->2^1)=(3,2)]) " +
+                "eigen:[1, 3, 2] {isTS:false isPartitionable:Yes} isGHaveMultipleEdges:false";
+        DirectedPseudograph<Integer, MyEdge> g = DirectedPseudographCreator.fromString(gString);
+        TotallySynchronizationBruteChecker.findNonSyncColorings(g).forEach(System.out::println);
+    }
+
+    public void tmpShow() throws Exception {
+        String a = "G:([1, 5, 2, 4, 3], [(1->1^1)=(1,1), (1->5^1)=(1,5), (2->2^1)=(2,2)," +
+                " (2->4^1)=(2,4), (3->1^1)=(3,1), (3->3^1)=(3,3), (4->3^1)=(4,3), " +
+                "(4->5^1)=(4,5), (5->1^1)=(5,1), (5->2^1)=(5,2)]) " +
+                "eigen:[3, 2, 1, 1, 2] {isTS:true isPartitionable:Yes} isGHaveMultipleEdges:false";
+        String b = "G:([1, 4, 5, 2, 3], [(1->4^1)=(1,4), (1->5^1)=(1,5), (2->1^1)=(2,1)," +
+                " (2->2^1)=(2,2), (3->1^1)=(3,1), (3->3^1)=(3,3), (4->2^1)=(4,2), (4->4^1)=(4,4), " +
+                "(5->2^1)=(5,2), (5->3^1)=(5,3)]) eigen:[2, 3, 1, 2, 1]" +
+                " {isTS:true isPartitionable:Yes} isGHaveMultipleEdges:false";
+        String c = "G:([1, 3, 4, 2, 5], [(1->3^1)=(1,3), (1->4^1)=(1,4), (2->3^1)=(2,3), " +
+                "(2->5^1)=(2,5), (3->1^1)=(3,1), (3->2^1)=(3,2), (4->2^1)=(4,2), (4->3^1)=(4,3), " +
+                "(5->1^1)=(5,1), (5->3^1)=(5,3)]) eigen:[2, 2, 3, 1, 1] " +
+                "{isTS:true isPartitionable:Yes} isGHaveMultipleEdges:false";
+        DirectedPseudograph<Integer, MyEdge> g = DirectedPseudographCreator.fromString(
+                a
+        );
+
+        Shower.show(g);
     }
 
     public void run() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreePrimitivePseudographs(5, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(3, 2).generateAllNonIsomorphic();
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked
@@ -99,8 +132,8 @@ public class App {
             //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
             //    Shower.show(g);
 
-            //if (synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
-            //    Shower.show(g);
+            if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
+                Shower.show(g);
         }
 
         //Shower.show(g);

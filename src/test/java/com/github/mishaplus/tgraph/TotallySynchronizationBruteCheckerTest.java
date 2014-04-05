@@ -1,5 +1,6 @@
 package com.github.mishaplus.tgraph;
 
+import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.ImmutableMultimap;
