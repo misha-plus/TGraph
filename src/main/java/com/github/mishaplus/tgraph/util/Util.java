@@ -37,7 +37,7 @@ public class Util {
         return accum;
     }
 
-    public static <V, E> void addVerticesIfNotContains(Graph<V, E> g, List<V> vs) {
+    public static <V, E> void addVerticesIfNotContains(Graph<V, E> g, Iterable<V> vs) {
         //noinspection Convert2streamapi
         for (V v : vs)
             if (!g.containsVertex(v))
