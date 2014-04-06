@@ -1,5 +1,6 @@
 package com.github.mishaplus.tgraph;
 
+import com.github.mishaplus.tgraph.automata.Automata;
 import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
 import com.github.mishaplus.tgraph.generation.GenerateSameDegreePrimitivePseudographs;
@@ -45,9 +46,9 @@ class SynchronizationEntry {
 public class App {
     public static void main(String[] args) throws Exception {
         App app = new App();
-        app.tmp2();
+        //app.tmp2();
         //app.tmpShow();
-        //app.run();
+        app.run();
     }
 
     public void tmp2() throws Exception {
@@ -132,8 +133,16 @@ public class App {
             //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
             //    Shower.show(g);
 
-            if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
-                Shower.show(g);
+            /*if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
+                Shower.show(g);*/
+            if (!synchronizationEntry.isSynchronizable) {
+                System.out.printf("[");
+                Set<Automata<Integer, Character>> nonSyncColorings
+                        = TotallySynchronizationBruteChecker.findNonSyncColorings(g);
+                System.out.print(nonSyncColorings);
+                System.out.printf("]\n\n");
+            }
+
         }
 
         //Shower.show(g);
