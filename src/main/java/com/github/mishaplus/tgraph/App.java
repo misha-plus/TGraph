@@ -56,7 +56,7 @@ public class App {
                 " (2->3^1)=(2,3), (3->1^1)=(3,1), (3->2^1)=(3,2)]) " +
                 "eigen:[1, 3, 2] {isTS:false isPartitionable:Yes} isGHaveMultipleEdges:false";
         DirectedPseudograph<Integer, MyEdge> g = DirectedPseudographCreator.fromString(gString);
-        TotallySynchronizationBruteChecker.findNonSyncColorings(g).forEach(System.out::println);
+        TotallySynchronizationBruteChecker.findAllNonSyncColorings(g).forEach(System.out::println);
     }
 
     public void tmpShow() throws Exception {
@@ -138,7 +138,7 @@ public class App {
             if (!synchronizationEntry.isSynchronizable) {
                 System.out.printf("[");
                 Set<Automata<Integer, Character>> nonSyncColorings
-                        = TotallySynchronizationBruteChecker.findNonSyncColorings(g);
+                        = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
                 System.out.print(nonSyncColorings);
                 System.out.printf("]\n\n");
             }
