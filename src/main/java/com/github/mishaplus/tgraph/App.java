@@ -11,7 +11,9 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class SynchronizationEntry {
     final boolean isSynchronizable;
@@ -81,7 +83,7 @@ public class App {
 
     public void run() throws Exception {
         Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreePrimitivePseudographs(4, 2).generateAllNonIsomorphic();
+                = new GenerateSameDegreePrimitivePseudographs(4, 3).generateAllNonIsomorphic();
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked
@@ -124,11 +126,12 @@ public class App {
             }
 
             System.out.printf(
-                    "G:%s eigen:%s {%s} isGHaveMultipleEdges:%s\n",
+                    "G:%s eigen:%s {%s} isGHaveMultipleEdges:%s isEulerian:%s\n",
                     g,
                     toEigen.get(g),
                     synchronizationEntry,
-                    isGHaveMultiEdge
+                    isGHaveMultiEdge,
+                    new EulerianInspector<Integer, MyEdge>().isGraphEulerianCycle(g)
             );
             //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
             //    Shower.show(g);
@@ -142,7 +145,7 @@ public class App {
                 System.out.print(nonSyncColorings);
                 System.out.printf("]\n\n");
 
-                Shower.show(nonSyncColorings.iterator().next());
+                //Shower.show(nonSyncColorings.iterator().next());
             }
 
         }
