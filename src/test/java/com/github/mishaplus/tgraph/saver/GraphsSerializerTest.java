@@ -12,7 +12,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Set;
 
-public class GraphListSerializerTest {
+public class GraphsSerializerTest {
     @Test
     public void test() throws Exception {
         File testFile = new File("target/test.txt");
@@ -31,7 +31,7 @@ public class GraphListSerializerTest {
                 2, 3
         )));
 
-        GraphListSerializer.save(testFile, toSave);
-        assertEquals(toSave, GraphListSerializer.load(testFile));
+        GraphsSerializer.save(testFile, toSave);
+        assertEquals(toSave, GraphsSerializer.load(testFile));
     }
 }

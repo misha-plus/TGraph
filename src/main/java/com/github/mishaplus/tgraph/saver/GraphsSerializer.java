@@ -2,15 +2,18 @@ package com.github.mishaplus.tgraph.saver;
 
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.io.*;
 import java.util.Set;
 
-public class GraphListSerializer {
+public class GraphsSerializer {
     public static void save(File file, Set<DirectedPseudograph<Integer, MyEdge>> graphs)
             throws IOException {
+        if (!file.exists())
+            Preconditions.checkArgument(file.createNewFile(), "Can't create file");
         try (PrintWriter out = new PrintWriter(file)) {
             for (DirectedPseudograph g : graphs)
                 out.println(g.toString());
