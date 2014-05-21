@@ -1,12 +1,13 @@
 package com.github.mishaplus.tgraph;
 
-import com.github.mishaplus.tgraph.automata.Automata;
 import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
+import com.github.mishaplus.tgraph.diophantineequation.FixedDegreeEulerianFinder;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
+import com.google.common.base.Objects;
 import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 
@@ -18,20 +19,35 @@ import java.util.Set;
 class SynchronizationEntry {
     final boolean isSynchronizable;
     final TernaryLogic isPartitionable;
+    final boolean isMayBeIncreasedToEulerianWithFixedDegree;
 
-    SynchronizationEntry(boolean isSynchronizable, TernaryLogic isPartitionable) {
+    SynchronizationEntry(
+            boolean isSynchronizable,
+            TernaryLogic isPartitionable,
+            boolean isMayBeIncreasedToEulerianWithFixedDegree
+    ) {
         this.isSynchronizable = isSynchronizable;
         this.isPartitionable  = isPartitionable;
+        this.isMayBeIncreasedToEulerianWithFixedDegree = isMayBeIncreasedToEulerianWithFixedDegree;
     }
 
     @Override
     public String toString() {
-        return String.format("isTS:%s isPartitionable:%s", isSynchronizable, isPartitionable);
+        return String.format(
+                "isTS:%s isPartitionable:%s isMayBeIncreasedToEulerianWithFixedDegree:%s",
+                isSynchronizable,
+                isPartitionable,
+                isMayBeIncreasedToEulerianWithFixedDegree
+        );
     }
 
     @Override
     public int hashCode() {
-        return isPartitionable.hashCode()*5 + (isSynchronizable ? 1 : 0);
+        return Objects.hashCode(
+                isPartitionable,
+                isSynchronizable,
+                isMayBeIncreasedToEulerianWithFixedDegree
+        );
     }
 
     @Override
@@ -41,7 +57,8 @@ class SynchronizationEntry {
 
         SynchronizationEntry other = (SynchronizationEntry) obj;
         return isSynchronizable == other.isSynchronizable
-                && isPartitionable == other.isPartitionable;
+                && isPartitionable == other.isPartitionable
+                && isMayBeIncreasedToEulerianWithFixedDegree == other.isMayBeIncreasedToEulerianWithFixedDegree;
     }
 }
 
@@ -50,8 +67,9 @@ public class App {
         App app = new App();
         //app.tmp2();
         //app.tmpShow();
-        //app.run();
+
         app.generateGraphsFiles();
+        app.run();
     }
 
     public void generateGraphsFiles() throws IOException {
@@ -98,7 +116,7 @@ public class App {
     }
 
     public void run() throws Exception {
-        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(3, 2);
+        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(3, 3);
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked
@@ -117,7 +135,8 @@ public class App {
 
             SynchronizationEntry syncEntry = new SynchronizationEntry(
                     isTotallySynchronizable,
-                    isCanBePartitioned
+                    isCanBePartitioned,
+                    new FixedDegreeEulerianFinder(g, g.edgeSet().size()).isSolveable()
             );
 
             toEigen.put(g, eigenvector);
@@ -154,11 +173,11 @@ public class App {
             /*if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
                 Shower.show(g);*/
             if (!synchronizationEntry.isSynchronizable) {
-                System.out.printf("[");
-                Set<Automata<Integer, Character>> nonSyncColorings
-                        = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
-                System.out.print(nonSyncColorings);
-                System.out.printf("]\n\n");
+            //    System.out.printf("[");
+            //    Set<Automata<Integer, Character>> nonSyncColorings
+            //            = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
+            //    System.out.print(nonSyncColorings);
+            //    System.out.printf("]\n\n");
 
                 //Shower.show(nonSyncColorings.iterator().next());
             }

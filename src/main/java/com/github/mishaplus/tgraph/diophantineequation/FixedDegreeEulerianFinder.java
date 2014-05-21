@@ -1,10 +1,13 @@
 package com.github.mishaplus.tgraph.diophantineequation;
 
+import com.github.mishaplus.tgraph.Converter;
 import com.github.mishaplus.tgraph.IntegerMatrix;
+import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.MyWeightedEdge;
 import com.google.common.base.Preconditions;
 import org.jgrapht.alg.EdmondsKarpMaximumFlow;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
+import org.jgrapht.graph.DirectedPseudograph;
 
 public class FixedDegreeEulerianFinder {
     private final IntegerMatrix edges;
@@ -21,6 +24,13 @@ public class FixedDegreeEulerianFinder {
         this.edges = edges;
         this.toDegree = toDegree;
         this.vertexCount = edges.n;
+    }
+
+    public FixedDegreeEulerianFinder(
+            DirectedPseudograph<Integer, MyEdge> graph,
+            int toDegree
+    ) {
+        this(Converter.toIntAdjArray(graph), toDegree);
     }
 
     public DefaultDirectedWeightedGraph<Integer, MyWeightedEdge> createFlowGraph() {
