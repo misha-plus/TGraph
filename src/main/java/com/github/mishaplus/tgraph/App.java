@@ -55,15 +55,18 @@ public class App {
     }
 
     public void generateGraphsFiles() throws IOException {
-        FilesGenerator.generateIfNotHave(2, 2);
-        FilesGenerator.generateIfNotHave(2, 3);
+        for (int d : ImmutableList.of(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
+            FilesGenerator.generateIfNotHave(2, d);
 
         FilesGenerator.generateIfNotHave(3, 2);
         FilesGenerator.generateIfNotHave(3, 3);
         FilesGenerator.generateIfNotHave(3, 4);
+        FilesGenerator.generateIfNotHave(3, 5);
 
         FilesGenerator.generateIfNotHave(4, 2);
         FilesGenerator.generateIfNotHave(4, 3);
+
+        FilesGenerator.generateIfNotHave(5, 2);
     }
 
     public void tmp2() throws Exception {
