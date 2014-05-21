@@ -18,6 +18,27 @@ public class GraphsSerializerTest {
         File testFile = new File("target/test.txt");
         if (testFile.exists())
             assertTrue(testFile.delete());
+
+        Set<DirectedPseudograph<Integer, MyEdge>> toSave = Sets.newHashSet();
+        toSave.add(DirectedPseudographCreator.create(ImmutableMultimap.of(
+                1, 2,
+                2, 3
+        )));
+        toSave.add(DirectedPseudographCreator.create(ImmutableMultimap.of(
+                3, 2,
+                2, 3,
+                2, 3
+        )));
+
+        GraphsSerializer.save(testFile, toSave);
+        assertEquals(toSave, GraphsSerializer.load(testFile));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExistedFile() throws Exception {
+        File testFile = new File("target/test.txt");
+        if (testFile.exists())
+            assertTrue(testFile.delete());
         assertTrue(testFile.createNewFile());
 
         Set<DirectedPseudograph<Integer, MyEdge>> toSave = Sets.newHashSet();

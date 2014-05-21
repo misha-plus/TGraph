@@ -12,13 +12,32 @@ import java.util.Set;
 public class GraphsSerializer {
     public static void save(File file, Set<DirectedPseudograph<Integer, MyEdge>> graphs)
             throws IOException {
+        File transactFile = new File(file.getAbsolutePath() + ".transact");
+        if (transactFile.exists())
+            Preconditions.checkArgument(transactFile.delete(), "Can't delete transact file");
+
         if (!file.exists())
             Preconditions.checkArgument(file.createNewFile(), "Can't create file");
-        try (PrintWriter out = new PrintWriter(file)) {
+        else {
+            Preconditions.checkArgument(
+                    !file.exists(),
+                    "Graphs file %s already exists. Writing ignored",
+                    file.getAbsolutePath()
+            );
+        }
+
+        try (PrintWriter out = new PrintWriter(transactFile)) {
             for (DirectedPseudograph g : graphs)
                 out.println(g.toString());
             out.flush();
         }
+
+        Preconditions.checkArgument(
+                transactFile.renameTo(file),
+                "Can't rename %s to %s",
+                transactFile.getAbsolutePath(),
+                file.getAbsolutePath()
+        );
     }
 
     public static Set<DirectedPseudograph<Integer, MyEdge>> load(File file) throws IOException {

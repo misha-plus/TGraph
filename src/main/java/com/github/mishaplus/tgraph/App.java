@@ -3,7 +3,6 @@ package com.github.mishaplus.tgraph;
 import com.github.mishaplus.tgraph.automata.Automata;
 import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
-import com.github.mishaplus.tgraph.generation.GenerateSameDegreePrimitivePseudographs;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
@@ -11,6 +10,7 @@ import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +50,20 @@ public class App {
         App app = new App();
         //app.tmp2();
         //app.tmpShow();
-        app.run();
+        //app.run();
+        app.generateGraphsFiles();
+    }
+
+    public void generateGraphsFiles() throws IOException {
+        FilesGenerator.generateIfNotHave(2, 2);
+        FilesGenerator.generateIfNotHave(2, 3);
+
+        FilesGenerator.generateIfNotHave(3, 2);
+        FilesGenerator.generateIfNotHave(3, 3);
+        FilesGenerator.generateIfNotHave(3, 4);
+
+        FilesGenerator.generateIfNotHave(4, 2);
+        FilesGenerator.generateIfNotHave(4, 3);
     }
 
     public void tmp2() throws Exception {
@@ -82,8 +95,7 @@ public class App {
     }
 
     public void run() throws Exception {
-        Set<DirectedPseudograph<Integer, MyEdge>> generated
-                = new GenerateSameDegreePrimitivePseudographs(4, 2).generateAllNonIsomorphic();
+        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(3, 2);
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked

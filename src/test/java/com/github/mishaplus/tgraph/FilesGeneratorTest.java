@@ -9,8 +9,10 @@ import org.junit.Test;
 import java.io.File;
 
 public class FilesGeneratorTest {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testGetGraphsFromFile() throws Exception {
+        new File("graphs/graphs(3,2).txt").delete();
         FilesGenerator.generateToFile(3, 2);
         assertEquals(
                 new GenerateSameDegreePrimitivePseudographs(3, 2).generateAllNonIsomorphic(),
@@ -18,8 +20,10 @@ public class FilesGeneratorTest {
         );
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testGenerateToFile() throws Exception {
+        new File("graphs/graphs(3,2).txt").delete();
         FilesGenerator.generateToFile(3, 2);
         assertEquals(
                 new GenerateSameDegreePrimitivePseudographs(3, 2).generateAllNonIsomorphic(),
