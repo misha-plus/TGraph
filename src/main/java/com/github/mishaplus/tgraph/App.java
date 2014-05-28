@@ -1,43 +1,65 @@
 package com.github.mishaplus.tgraph;
 
+import com.github.mishaplus.tgraph.automata.Automata;
 import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.diophantineequation.FixedDegreeEulerianFinder;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
+import com.github.mishaplus.tgraph.interestinggraphs.AlwaysInteresting;
+import com.github.mishaplus.tgraph.interestinggraphs.InterestingChecker;
+import com.github.mishaplus.tgraph.interestinggraphs.TotSyncPartitionableInterestingChecker;
+import com.github.mishaplus.tgraph.interestinggraphs.TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.base.Objects;
 import com.google.common.collect.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DirectedPseudograph;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.PrintWriter;
+import java.util.*;
+
+class CacheEntry {
+    Map<DirectedPseudograph<Integer, MyEdge>, GraphMarks> marked = Maps.newHashMap();
+    Multimap<GraphMarks, DirectedPseudograph<Integer, MyEdge>> invMarked
+            = ArrayListMultimap.create();
+
+    Map<DirectedPseudograph<Integer, MyEdge>, List<Integer>> toEigen = Maps.newHashMap();
+}
 
 class SynchronizationEntry {
     final boolean isSynchronizable;
     final TernaryLogic isPartitionable;
     final boolean isMayBeIncreasedToEulerianWithFixedDegree;
+    final boolean isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree;
 
     SynchronizationEntry(
             boolean isSynchronizable,
             TernaryLogic isPartitionable,
-            boolean isMayBeIncreasedToEulerianWithFixedDegree
+            boolean isMayBeIncreasedToEulerianWithFixedDegree,
+            boolean isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree
     ) {
         this.isSynchronizable = isSynchronizable;
         this.isPartitionable  = isPartitionable;
-        this.isMayBeIncreasedToEulerianWithFixedDegree = isMayBeIncreasedToEulerianWithFixedDegree;
+        this.isMayBeIncreasedToEulerianWithFixedDegree
+                = isMayBeIncreasedToEulerianWithFixedDegree;
+        this.isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree
+                = isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "isTS:%s isPartitionable:%s isMayBeIncreasedToEulerianWithFixedDegree:%s",
+                "isTS:%5s isPartitionable:%3s isMayBeIncreasedToEulerianWithFixedDegree:%5s " +
+                        "isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree:%5s",
                 isSynchronizable,
                 isPartitionable,
-                isMayBeIncreasedToEulerianWithFixedDegree
+                isMayBeIncreasedToEulerianWithFixedDegree,
+                isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree
         );
     }
 
@@ -46,7 +68,8 @@ class SynchronizationEntry {
         return Objects.hashCode(
                 isPartitionable,
                 isSynchronizable,
-                isMayBeIncreasedToEulerianWithFixedDegree
+                isMayBeIncreasedToEulerianWithFixedDegree,
+                isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree
         );
     }
 
@@ -58,21 +81,139 @@ class SynchronizationEntry {
         SynchronizationEntry other = (SynchronizationEntry) obj;
         return isSynchronizable == other.isSynchronizable
                 && isPartitionable == other.isPartitionable
-                && isMayBeIncreasedToEulerianWithFixedDegree == other.isMayBeIncreasedToEulerianWithFixedDegree;
+                && isMayBeIncreasedToEulerianWithFixedDegree
+                        == other.isMayBeIncreasedToEulerianWithFixedDegree
+                && isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree
+                        == other.isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree;
     }
 }
 
 public class App {
+    Map<Pair<Integer, Integer>, CacheEntry> cache = new HashMap<>();
+    Map<DirectedPseudograph<Integer, MyEdge>, Boolean> isSynchronizableCache = new HashMap<>();
+
+    public void initIsSyncCache() throws FileNotFoundException {
+        File isTSFile = new File("properties/isTS.txt");
+        if (!isTSFile.exists())
+            return;
+        Scanner in = new Scanner(isTSFile);
+        while (in.hasNext()) {
+            String graphRepresentation = in.nextLine();
+            boolean isTS = Boolean.valueOf(in.nextLine());
+            isSynchronizableCache.put(DirectedPseudographCreator.fromString(graphRepresentation), isTS);
+        }
+        in.close();
+    }
+
+    public void saveIsSyncCache() throws FileNotFoundException {
+        PrintWriter out = new PrintWriter("properties/isTS.txt");
+        for (Map.Entry<DirectedPseudograph<Integer, MyEdge>, Boolean> cacheEntry : isSynchronizableCache.entrySet()) {
+            out.println(cacheEntry.getKey());
+            out.println(cacheEntry.getValue());
+        }
+        out.flush();
+        out.close();
+    }
+
     public static void main(String[] args) throws Exception {
         App app = new App();
+        PrintWriter out = new PrintWriter(System.out);
         //app.tmp2();
         //app.tmpShow();
 
         app.generateGraphsFiles();
-        app.run();
+        app.initIsSyncCache();
+
+        Set<InterestingChecker> interestingCheckers = ImmutableSet.of(
+                new TotSyncPartitionableInterestingChecker(),
+                new TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker()
+        );
+
+        //noinspection Convert2streamapi
+        for (Map.Entry<Integer, Integer> vertexCountToDegree : generated.entries()) {
+            int vertexCount = vertexCountToDegree.getKey();
+            int outDegree = vertexCountToDegree.getValue();
+            if (outDegree <= 5) {
+                //app.run(vertexCountToDegree.getKey(), vertexCountToDegree.getValue(), out);
+                //app.run(3, 3, false, out);
+                app.markedGraphsSaver(vertexCount, outDegree);
+                app.markedGraphsSaverWithNonSyncColorings(vertexCount, outDegree);
+                for (InterestingChecker interestingChecker : interestingCheckers)
+                    app.interestingGraphSaver(vertexCount, outDegree, interestingChecker);
+            }
+        }
+
+        //app.run(2, 2, new AlwaysInteresting(), false, out);
+
+        out.flush();
+        out.close();
+
+        app.saveIsSyncCache();
     }
 
+    public void interestingGraphSaver(
+            int vertexCount,
+            int outDegree,
+            InterestingChecker interestingChecker
+    ) throws Exception {
+        PrintWriter out = new PrintWriter(String.format(
+                "interesting/%s(%d,%d).txt",
+                interestingChecker.filenamePrefix(),
+                vertexCount,
+                outDegree
+        ));
+
+        run(vertexCount, outDegree, interestingChecker, false, out);
+        out.flush();
+        out.close();
+    }
+
+    public void markedGraphsSaver(int vertexCount, int outDegree) throws Exception {
+        PrintWriter out = new PrintWriter(String.format(
+                "markedGraphs/marked(%d,%d).txt",
+                vertexCount,
+                outDegree
+        ));
+
+        run(vertexCount, outDegree, new AlwaysInteresting(), false, out);
+        out.flush();
+        out.close();
+    }
+
+    public void markedGraphsSaverWithNonSyncColorings(
+            int vertexCount,
+            int outDegree
+    ) throws Exception {
+        PrintWriter out = new PrintWriter(String.format(
+                "markedWithColorings/markedWithColorings(%d,%d).txt",
+                vertexCount,
+                outDegree
+        ));
+
+        run(vertexCount, outDegree, new AlwaysInteresting(), true, out);
+        out.flush();
+        out.close();
+    }
+
+    public void run() throws Exception {
+
+    }
+
+    static Multimap<Integer, Integer> generated = ImmutableMultimap.<Integer, Integer>builder()
+            .putAll(2, ImmutableList.of(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
+            .putAll(3, ImmutableList.of(2, 3, 4/*, 5*/))
+            .putAll(4, ImmutableList.of(2, 3))
+            .put(5, 2)
+            .build();
+
     public void generateGraphsFiles() throws IOException {
+        for (Map.Entry<Integer, Integer> vertexCountToDegree : generated.entries())
+            FilesGenerator.generateIfNotHave(
+                    vertexCountToDegree.getKey(),
+                    vertexCountToDegree.getValue()
+            );
+
+        /*
         for (int d : ImmutableList.of(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
             FilesGenerator.generateIfNotHave(2, d);
 
@@ -85,6 +226,7 @@ public class App {
         FilesGenerator.generateIfNotHave(4, 3);
 
         FilesGenerator.generateIfNotHave(5, 2);
+        */
     }
 
     public void tmp2() throws Exception {
@@ -115,8 +257,126 @@ public class App {
         Shower.show(g);
     }
 
-    public void run() throws Exception {
-        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(3, 3);
+    public boolean getCachedTotSyncProperty(
+            DirectedPseudograph<Integer, MyEdge> graph
+    ) {
+        if (isSynchronizableCache.containsKey(graph))
+            return isSynchronizableCache.get(graph);
+        else {
+            boolean result = TotallySynchronizationBruteChecker.checkTS(graph);
+            isSynchronizableCache.put(graph, result);
+            return result;
+        }
+    }
+
+    public void run(
+            int vertexCount,
+            int outDegree,
+            InterestingChecker interestingChecker,
+            boolean isPrintNonSyncColorings,
+            PrintWriter out
+    ) throws Exception {
+        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(
+                vertexCount, outDegree
+        );
+
+        CacheEntry cacheEntry = cache.containsKey(Pair.of(vertexCount, outDegree))
+                ? cache.get(Pair.of(vertexCount, outDegree))
+                : new CacheEntry();
+        Map<DirectedPseudograph<Integer, MyEdge>, GraphMarks> marked = cacheEntry.marked;
+        Multimap<GraphMarks, DirectedPseudograph<Integer, MyEdge>> invMarked = cacheEntry.invMarked;
+        Map<DirectedPseudograph<Integer, MyEdge>, List<Integer>> toEigen = cacheEntry.toEigen;
+
+        int progressIdx = 0;
+        if (marked.isEmpty())
+            for (DirectedPseudograph<Integer, MyEdge> g: generated) {
+                progressIdx++;
+                List<Integer> eigenvector = new SameOutDegreeGraphEigenvector()
+                        .getFriedmanEigenvectorWithRelativelyPrimeComponents(g);
+
+                GraphMarks marks = new GraphMarks();
+
+                marks.setMark(
+                        MarkType.isPartitionable,
+                        new BruteForceStrategy()
+                                .isCanBePartedToSameSumSets(ImmutableMultiset.copyOf(eigenvector))
+                );
+
+                marks.setMark(
+                        MarkType.isTotallySynchronizable,
+                        getCachedTotSyncProperty(g)
+                );
+
+                int maxDegree = 0;
+                for (int v : g.vertexSet()) {
+                    maxDegree = Math.max(maxDegree, g.outDegreeOf(v));
+                    maxDegree = Math.max(maxDegree, g.inDegreeOf(v));
+                }
+
+                marks.setMark(
+                        MarkType.isMayBeIncreasedToEulerianWithFixedDegreeEqMaxDegree,
+                        new FixedDegreeEulerianFinder(g, g.edgeSet().size()).isSolveable()
+                );
+
+                marks.setMark(
+                        MarkType.isMayBeIncreasedToEulerianWithFixedDegree,
+                        new FixedDegreeEulerianFinder(g, maxDegree).isSolveable()
+                );
+
+                marks.setMark(
+                        MarkType.isEulerian,
+                        new EulerianInspector<Integer, MyEdge>().isGraphEulerianCycle(g)
+                );
+
+                toEigen.put(g, eigenvector);
+                marked.put(g, marks);
+                invMarked.put(marks, g);
+            }
+
+        cache.put(Pair.of(vertexCount, outDegree), cacheEntry);
+
+        for (Map.Entry<GraphMarks, DirectedPseudograph<Integer, MyEdge>> syncClass : invMarked.entries()) {
+            GraphMarks graphMarks = syncClass.getKey();
+            DirectedPseudograph<Integer, MyEdge> g = syncClass.getValue();
+
+            if (interestingChecker.isInteresting(g, graphMarks)) {
+                out.printf(
+                        "G:%s eigen:%s %s\n",
+                        g,
+                        toEigen.get(g),
+                        graphMarks
+                );
+
+                //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
+                //    Shower.show(g);
+
+                /*if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
+                Shower.show(g);*/
+                if (!graphMarks.isTotallySynchronizable() && isPrintNonSyncColorings) {
+                    out.printf("[");
+                    Set<Automata<Integer, Character>> nonSyncColorings
+                             = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
+                    out.print(nonSyncColorings);
+                    out.printf("]\n\n");
+
+                    //Shower.show(nonSyncColoringsCache.iterator().next());
+                }
+            }
+
+        }
+
+        //Shower.show(g);
+    }
+
+    public void runOld(
+            int vertexCount,
+            int outDegree,
+            boolean isPrintNonSyncColorings,
+            PrintWriter out
+    ) throws Exception {
+        Set<DirectedPseudograph<Integer, MyEdge>> generated = FilesGenerator.getGraphsFromFile(
+                vertexCount, outDegree
+        );
 
         Map<DirectedPseudograph<Integer, MyEdge>, SynchronizationEntry> marked = Maps.newHashMap();
         Multimap<SynchronizationEntry, DirectedPseudograph<Integer, MyEdge>> invMarked
@@ -133,10 +393,17 @@ public class App {
 
             boolean isTotallySynchronizable = TotallySynchronizationBruteChecker.checkTS(g);
 
+            int maxDegree = 0;
+            for (int v : g.vertexSet()) {
+                maxDegree = Math.max(maxDegree, g.outDegreeOf(v));
+                maxDegree = Math.max(maxDegree, g.inDegreeOf(v));
+            }
+
             SynchronizationEntry syncEntry = new SynchronizationEntry(
                     isTotallySynchronizable,
                     isCanBePartitioned,
-                    new FixedDegreeEulerianFinder(g, g.edgeSet().size()).isSolveable()
+                    new FixedDegreeEulerianFinder(g, g.edgeSet().size()).isSolveable(),
+                    new FixedDegreeEulerianFinder(g, maxDegree).isSolveable()
             );
 
             toEigen.put(g, eigenvector);
@@ -159,8 +426,8 @@ public class App {
                     isGHaveMultiEdge = true;
             }
 
-            System.out.printf(
-                    "G:%s eigen:%s {%s} isGHaveMultipleEdges:%s isEulerian:%s\n",
+            out.printf(
+                    "G:%s eigen:%s {%s} isGHaveMultipleEdges:%5s isEulerian:%5s\n",
                     g,
                     toEigen.get(g),
                     synchronizationEntry,
@@ -172,14 +439,14 @@ public class App {
 
             /*if (!synchronizationEntry.isSynchronizable && !isGHaveMultiEdge)
                 Shower.show(g);*/
-            if (!synchronizationEntry.isSynchronizable) {
-            //    System.out.printf("[");
-            //    Set<Automata<Integer, Character>> nonSyncColorings
-            //            = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
-            //    System.out.print(nonSyncColorings);
-            //    System.out.printf("]\n\n");
+            if (!synchronizationEntry.isSynchronizable && isPrintNonSyncColorings) {
+                out.printf("[");
+                Set<Automata<Integer, Character>> nonSyncColorings
+                        = TotallySynchronizationBruteChecker.findAllNonSyncNonCharIsomorphicColorings(g);
+                out.print(nonSyncColorings);
+                out.printf("]\n\n");
 
-                //Shower.show(nonSyncColorings.iterator().next());
+                //Shower.show(nonSyncColoringsCache.iterator().next());
             }
 
         }
