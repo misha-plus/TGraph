@@ -4,19 +4,19 @@ import com.github.mishaplus.tgraph.GraphMarks;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import org.jgrapht.graph.DirectedPseudograph;
 
-public class TotSyncPartitionableInterestingChecker implements InterestingChecker {
+public class PartitionableInterestingChecker implements InterestingChecker {
     @Override
     public boolean isInteresting(DirectedPseudograph<Integer, MyEdge> graph, GraphMarks marks) {
-        return marks.isPartitionable() && marks.isTotallySynchronizable();
+        return marks.isPartitionable();
     }
 
     @Override
     public String filenamePrefix() {
-        return "totSyncPartitionable";
+        return "partitionable";
     }
 
     @Override
     public String getDescription() {
-        return "partitionable & totallySynchronizable";
+        return "partitionable";
     }
 }

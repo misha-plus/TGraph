@@ -14,4 +14,9 @@ public class AlwaysInteresting implements InterestingChecker {
     public String filenamePrefix() {
         return "graphs";
     }
+
+    @Override
+    public String getDescription() {
+        return "All graphs";
+    }
 }

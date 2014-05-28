@@ -4,12 +4,10 @@ import com.github.mishaplus.tgraph.automata.Automata;
 import com.github.mishaplus.tgraph.automata.coloring.TotallySynchronizationBruteChecker;
 import com.github.mishaplus.tgraph.diophantineequation.FixedDegreeEulerianFinder;
 import com.github.mishaplus.tgraph.eigen.SameOutDegreeGraphEigenvector;
-import com.github.mishaplus.tgraph.interestinggraphs.AlwaysInteresting;
-import com.github.mishaplus.tgraph.interestinggraphs.InterestingChecker;
-import com.github.mishaplus.tgraph.interestinggraphs.TotSyncPartitionableInterestingChecker;
-import com.github.mishaplus.tgraph.interestinggraphs.TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker;
+import com.github.mishaplus.tgraph.interestinggraphs.*;
 import com.github.mishaplus.tgraph.numbersets.strategies.BruteForceStrategy;
 import com.github.mishaplus.tgraph.numbersets.strategies.TernaryLogic;
+import com.github.mishaplus.tgraph.statistics.StatRegister;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.base.Objects;
@@ -17,10 +15,7 @@ import com.google.common.collect.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DirectedPseudograph;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 class CacheEntry {
@@ -91,6 +86,7 @@ class SynchronizationEntry {
 public class App {
     Map<Pair<Integer, Integer>, CacheEntry> cache = new HashMap<>();
     Map<DirectedPseudograph<Integer, MyEdge>, Boolean> isSynchronizableCache = new HashMap<>();
+    StatRegister statRegister = new StatRegister();
 
     public void initIsSyncCache() throws FileNotFoundException {
         File isTSFile = new File("properties/isTS.txt");
@@ -115,6 +111,13 @@ public class App {
         out.close();
     }
 
+    public void saveStatistics() throws FileNotFoundException {
+        PrintWriter out = new PrintWriter("statistics.txt");
+        statRegister.saveStatistics(out);
+        out.flush();
+        out.close();
+    }
+
     public static void main(String[] args) throws Exception {
         App app = new App();
         PrintWriter out = new PrintWriter(System.out);
@@ -126,7 +129,8 @@ public class App {
 
         Set<InterestingChecker> interestingCheckers = ImmutableSet.of(
                 new TotSyncPartitionableInterestingChecker(),
-                new TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker()
+                new TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker(),
+                new MayIncreasedToEulerianWithFixDegreeOnlyOverMaxDegreeInterestingChecker()
         );
 
         //noinspection Convert2streamapi
@@ -143,12 +147,27 @@ public class App {
             }
         }
 
+        app.learnStatistics();
+        app.saveStatistics();
+
         //app.run(2, 2, new AlwaysInteresting(), false, out);
 
         out.flush();
         out.close();
 
         app.saveIsSyncCache();
+
+    }
+
+    public void learnStatistics() throws Exception {
+        for (Map.Entry<Pair<Integer, Integer>, CacheEntry> storedInCache : cache.entrySet()) {
+            int vertexCount = storedInCache.getKey().getLeft();
+            int outDegree   = storedInCache.getKey().getRight();
+            CacheEntry cacheEntry = storedInCache.getValue();
+            for (Map.Entry<DirectedPseudograph<Integer, MyEdge>, GraphMarks> graphsToMarks : cacheEntry.marked.entrySet()) {
+                statRegister.registerUnique(vertexCount, outDegree, graphsToMarks.getKey(), graphsToMarks.getValue());
+            }
+        }
     }
 
     public void interestingGraphSaver(

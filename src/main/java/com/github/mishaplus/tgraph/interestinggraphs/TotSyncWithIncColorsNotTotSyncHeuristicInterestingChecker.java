@@ -17,4 +17,9 @@ public class TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker implement
     public String filenamePrefix() {
         return "partOfTotSyncWithIncColorsNotTotSync";
     }
+
+    @Override
+    public String getDescription() {
+        return "totallySynchronizable & mayBeIncreasedToEulerianWithFixedDegree";
+    }
 }
