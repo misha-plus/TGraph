@@ -130,7 +130,8 @@ public class App {
         Set<InterestingChecker> interestingCheckers = ImmutableSet.of(
                 new TotSyncPartitionableInterestingChecker(),
                 new TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker(),
-                new MayIncreasedToEulerianWithFixDegreeOnlyOverMaxDegreeInterestingChecker()
+                new MayIncreasedToEulerianWithFixDegreeOnlyOverMaxDegreeInterestingChecker(),
+                new NotEulerianAndPartitionableInterestingChecker()
         );
 
         //noinspection Convert2streamapi

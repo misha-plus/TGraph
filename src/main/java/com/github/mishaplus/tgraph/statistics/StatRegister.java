@@ -22,7 +22,7 @@ public class StatRegister {
             new TotallySynchronizableInterestingChecker(),
             new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker(),
             new PartitionableInterestingChecker(),
-            new NotEulerianAndNotPartitionableInterestingChecker()
+            new NotEulerianAndPartitionableInterestingChecker()
     );
 
     Map<Pair<Integer, Integer>, Map<String, Integer>> statistics = Maps.newTreeMap();
