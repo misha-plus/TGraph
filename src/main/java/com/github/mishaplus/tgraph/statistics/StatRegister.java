@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.io.PrintWriter;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,10 +23,30 @@ public class StatRegister {
             new TotallySynchronizableInterestingChecker(),
             new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker(),
             new PartitionableInterestingChecker(),
-            new NotEulerianAndPartitionableInterestingChecker()
+            new NotEulerianAndPartitionableInterestingChecker(),
+            new NotEulerianPartitionableTsInterestingChecker(),
+            new IntersectionInterestingChecker(
+                    new TotallySynchronizableInterestingChecker(),
+                    new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker(),
+                    //new NegateInterestingChecker(new EulerianInterestingChecker()),
+                    new NegateInterestingChecker(new PartitionableInterestingChecker())
+            ),
+            new IntersectionInterestingChecker(
+                    new NegateInterestingChecker(
+                            new TotallySynchronizableInterestingChecker()
+                    ),
+                    new NegateInterestingChecker(
+                            new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker()
+                    )
+            ),
+            new IntersectionInterestingChecker(
+                    new NegateInterestingChecker(new EulerianInterestingChecker()),
+                    new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker()
+            )
     );
 
     Map<Pair<Integer, Integer>, Map<String, Integer>> statistics = Maps.newTreeMap();
+    Map<Pair<Integer, Integer>, Integer> count = Maps.newTreeMap();
 
     private void incrementPropertyCount(
             int vertexCount,
@@ -34,7 +55,7 @@ public class StatRegister {
     ) {
         Pair<Integer, Integer> vertexCountAndOutDegree = Pair.of(vertexCount, outDegree);
         if (!statistics.containsKey(vertexCountAndOutDegree)) {
-            statistics.put(vertexCountAndOutDegree, Maps.newHashMap());
+            statistics.put(vertexCountAndOutDegree, Maps.newTreeMap());
             Map<String, Integer> properties = statistics.get(vertexCountAndOutDegree);
             for (InterestingChecker inspector : registerInspectors)
                 properties.put(inspector.getDescription(), 0);
@@ -51,6 +72,10 @@ public class StatRegister {
             DirectedPseudograph<Integer, MyEdge> graph,
             GraphMarks marks
     ) {
+        Pair<Integer, Integer> vertexCountAndOutDegree = Pair.of(vertexCount, outDegree);
+        if (!count.containsKey(vertexCountAndOutDegree))
+            count.put(vertexCountAndOutDegree, 0);
+        count.put(vertexCountAndOutDegree, count.get(vertexCountAndOutDegree) + 1);
         for (InterestingChecker inspector : registerInspectors) {
             if (inspector.isInteresting(graph, marks)) {
                 incrementPropertyCount(vertexCount, outDegree, inspector.getDescription());
@@ -58,15 +83,40 @@ public class StatRegister {
         }
     }
 
-    public void saveStatistics(PrintWriter out) {
-        for (Map.Entry<Pair<Integer, Integer>, Map<String, Integer>> properties : statistics.entrySet()) {
+    public void saveStatistics(PrintWriter out, boolean lexicographicDirection) {
+        Map<Pair<Integer, Integer>, Map<String, Integer>> orderedStatistics
+                = Maps.newTreeMap(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
+                if (lexicographicDirection)
+                    return a.compareTo(b);
+                else
+                    return swap(a).compareTo(swap(b));
+            }
+
+            <L, R> Pair<R, L> swap(Pair<L, R> pair) {
+                return Pair.of(pair.getRight(), pair.getLeft());
+            }
+        });
+
+        orderedStatistics.putAll(statistics);
+
+        for (Map.Entry<Pair<Integer, Integer>, Map<String, Integer>> properties : orderedStatistics.entrySet()) {
             int vertexCount = properties.getKey().getLeft();
             int outDegree   = properties.getKey().getRight();
+            Pair<Integer, Integer> vertexCountAndOutDegree = Pair.of(vertexCount, outDegree);
+            int allGraphsCount = count.get(vertexCountAndOutDegree);
+
             out.printf("(%d, %d):\n", vertexCount, outDegree);
             for (Map.Entry<String, Integer> property : properties.getValue().entrySet()) {
                 String propertyName = property.getKey();
                 int propertyCount   = property.getValue();
-                out.printf("    %s: %d\n", propertyName, propertyCount);
+                out.printf(
+                        "    %s: %d (%.2f%%)\n",
+                        propertyName,
+                        propertyCount,
+                        propertyCount*100.0/allGraphsCount
+                );
             }
             out.printf("\n\n");
         }

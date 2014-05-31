@@ -112,10 +112,18 @@ public class App {
     }
 
     public void saveStatistics() throws FileNotFoundException {
-        PrintWriter out = new PrintWriter("statistics.txt");
-        statRegister.saveStatistics(out);
-        out.flush();
-        out.close();
+        {
+            PrintWriter out = new PrintWriter("statistics1order.txt");
+            statRegister.saveStatistics(out, true);
+            out.flush();
+            out.close();
+        }
+        {
+            PrintWriter out = new PrintWriter("statistics2order.txt");
+            statRegister.saveStatistics(out, false);
+            out.flush();
+            out.close();
+        }
     }
 
     public static void main(String[] args) throws Exception {
