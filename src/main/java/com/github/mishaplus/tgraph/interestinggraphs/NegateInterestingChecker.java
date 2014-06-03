@@ -24,7 +24,7 @@ public class NegateInterestingChecker implements InterestingChecker {
     @Override
     public String getDescription() {
         String checkerDescription = checker.getDescription();
-        if (checkerDescription.matches("[!A-Za-z0-9]+"))
+        if (checkerDescription.matches("!*([A-Za-z0-9]+|(\\[.*\\]))"))
             return "!" + checkerDescription;
         else
             return String.format("!(%s)", checkerDescription);

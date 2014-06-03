@@ -1,6 +1,7 @@
 package com.github.mishaplus.tgraph.statistics;
 
 import com.github.mishaplus.tgraph.GraphMarks;
+import com.github.mishaplus.tgraph.interestinggraphs.PermutationsCountInBaseInterestingChecker;
 import com.github.mishaplus.tgraph.interestinggraphs.*;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.google.common.collect.ImmutableSet;
@@ -42,7 +43,45 @@ public class StatRegister {
             new IntersectionInterestingChecker(
                     new NegateInterestingChecker(new EulerianInterestingChecker()),
                     new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker()
-            )
+            ),
+
+            new IntersectionInterestingChecker(
+                    new TotallySynchronizableInterestingChecker(),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.GREATER, 2)
+            ),
+            new IntersectionInterestingChecker(
+                    new TotallySynchronizableInterestingChecker(),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.GREATER, 3)
+            ),
+            new IntersectionInterestingChecker(
+                    new NegateInterestingChecker(
+                            new TotallySynchronizableInterestingChecker()
+                    ),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.LESS, 2)
+            ),
+
+            new IntersectionInterestingChecker(
+                    new TotallySynchronizableInterestingChecker(),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.EQUAL, 2)
+            ),
+            new IntersectionInterestingChecker(
+                    new NegateInterestingChecker(
+                            new TotallySynchronizableInterestingChecker()
+                    ),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.EQUAL, 2)
+            ),
+
+            new IntersectionInterestingChecker(
+                    new NegateInterestingChecker(
+                            new TotallySynchronizableInterestingChecker()
+                    ),
+                    new NegateInterestingChecker(
+                            new EulerianInterestingChecker()
+                    ),
+                    new PermutationsCountInBaseInterestingChecker(Comparison.GREATER, 2)
+            ),
+
+            new HaveVertexWithInDegreeLessThanGraphOutDegreeAndOneInput()
     );
 
     Map<Pair<Integer, Integer>, Map<String, Integer>> statistics = Maps.newTreeMap();

@@ -3,11 +3,11 @@ package com.github.mishaplus.tgraph.generation;
 import com.github.mishaplus.tgraph.util.DirectedPseudographCreator;
 import com.github.mishaplus.tgraph.util.MyEdge;
 import com.github.mishaplus.tgraph.util.Util;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.*;
 import org.jgrapht.graph.DirectedPseudograph;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SameDegreeGraphBruteForcer {
@@ -15,7 +15,7 @@ public class SameDegreeGraphBruteForcer {
     private final int degree;
     private final Consumer<DirectedPseudograph<Integer, MyEdge>> handler;
     private final List<Integer> vertices;
-    private final List<List<Integer>> decartPower;
+    private final Set<Multiset<Integer>> decartPower;
 
     public SameDegreeGraphBruteForcer(
             int vertexCount,
@@ -26,7 +26,10 @@ public class SameDegreeGraphBruteForcer {
         this.degree = degree;
         this.handler = handler;
         vertices = Util.generateList(1, vertexCount);
-        decartPower = Util.decartPower(vertices, degree);
+        Set<Multiset<Integer>> unorderedDecartPower = Sets.newHashSet();
+        for (List<Integer> tuple : Util.decartPower(vertices, degree))
+            unorderedDecartPower.add(ImmutableMultiset.copyOf(tuple));
+        decartPower = unorderedDecartPower;
     }
 
     public void brute() {
@@ -42,7 +45,7 @@ public class SameDegreeGraphBruteForcer {
             return;
         }
 
-        for (List<Integer> vTargets : decartPower) {
+        for (Multiset<Integer> vTargets : decartPower) {
             vTargets.forEach(target -> edges.put(v, target));
             bruteGraph(v + 1, edges);
             edges.removeAll(v);

@@ -40,7 +40,7 @@ public class IntersectionInterestingChecker implements InterestingChecker {
             if (result.length() > 0)
                 result.append(" & ");
             String checkerDescription = checker.getDescription();
-            if (checkerDescription.matches("[!A-Za-z0-9]+"))
+            if (checkerDescription.matches("!*([A-Za-z0-9]+|(\\[.*\\]))"))
                 result.append(checkerDescription);
             else
                 result.append(String.format("(%s)", checkerDescription));

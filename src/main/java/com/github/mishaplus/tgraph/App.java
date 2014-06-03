@@ -139,7 +139,14 @@ public class App {
                 new TotSyncPartitionableInterestingChecker(),
                 new TotSyncWithIncColorsNotTotSyncHeuristicInterestingChecker(),
                 new MayIncreasedToEulerianWithFixDegreeOnlyOverMaxDegreeInterestingChecker(),
-                new NotEulerianAndPartitionableInterestingChecker()
+                new NotEulerianAndPartitionableInterestingChecker(),
+                new IntersectionInterestingChecker(
+                        new NegateInterestingChecker(
+                                new EulerianInterestingChecker()
+                        ),
+                        new MayBeIncreasedToEulerianWithFixedDegreeInterestingChecker()
+                )
+
         );
 
         //noinspection Convert2streamapi
@@ -152,7 +159,20 @@ public class App {
                 app.markedGraphsSaver(vertexCount, outDegree);
                 app.markedGraphsSaverWithNonSyncColorings(vertexCount, outDegree);
                 for (InterestingChecker interestingChecker : interestingCheckers)
-                    app.interestingGraphSaver(vertexCount, outDegree, interestingChecker);
+                    app.interestingGraphSaver(vertexCount, outDegree, interestingChecker, false);
+            }
+            if (outDegree == 2) {
+                app.interestingGraphSaver(vertexCount, outDegree, new OverThanTwoPermutationsInterestingChecker(), false);
+                app.interestingGraphSaver(vertexCount, outDegree, new TotallySynchronizableInterestingChecker(), false);
+                app.interestingGraphSaver(vertexCount, outDegree, new IntersectionInterestingChecker(
+                        new NegateInterestingChecker(
+                                new TotallySynchronizableInterestingChecker()
+                        ),
+                        new NegateInterestingChecker(
+                                new EulerianInterestingChecker()
+                        ),
+                        new PermutationsCountInBaseInterestingChecker(Comparison.GREATER, 2)
+                ), true);
             }
         }
 
@@ -182,7 +202,8 @@ public class App {
     public void interestingGraphSaver(
             int vertexCount,
             int outDegree,
-            InterestingChecker interestingChecker
+            InterestingChecker interestingChecker,
+            boolean isSaveColorings
     ) throws Exception {
         PrintWriter out = new PrintWriter(String.format(
                 "interesting/%s(%d,%d).txt",
@@ -191,7 +212,7 @@ public class App {
                 outDegree
         ));
 
-        run(vertexCount, outDegree, interestingChecker, false, out);
+        run(vertexCount, outDegree, interestingChecker, isSaveColorings, out);
         out.flush();
         out.close();
     }
@@ -232,6 +253,7 @@ public class App {
             .putAll(3, ImmutableList.of(2, 3, 4/*, 5*/))
             .putAll(4, ImmutableList.of(2, 3))
             .put(5, 2)
+            .put(6, 2)
             .build();
 
     public void generateGraphsFiles() throws IOException {
@@ -369,10 +391,11 @@ public class App {
 
             if (interestingChecker.isInteresting(g, graphMarks)) {
                 out.printf(
-                        "G:%s eigen:%s %s\n",
+                        "G:%s eigen:%s %s permutations:%d\n",
                         g,
                         toEigen.get(g),
-                        graphMarks
+                        graphMarks,
+                        new PermutationCounter().count(g)
                 );
 
                 //if (synchronizationEntry.equals(new SynchronizationEntry(true, TernaryLogic.Yes)))
